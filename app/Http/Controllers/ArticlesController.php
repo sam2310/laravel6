@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class ArticlesController extends Controller
 {
@@ -36,12 +37,12 @@ class ArticlesController extends Controller
         //persist the new resource
         // die('hello');
         // dump(request()->all());
-        request()->validate([
+        // request()->validate([
 
-            'title'=>'required',
-            'excerpt'=>'required',
-            'body' => 'required'
-        ]);
+        //     'title'=>'required',
+        //     'excerpt'=>'required',
+        //     'body' => 'required'
+        // ]);
 
         // $article = new Article();
         // $article->title= request('title');
@@ -49,11 +50,19 @@ class ArticlesController extends Controller
         // $article->body= request('body');
         // $article->save();
 
-        Article::create([
-            'title'=>request('title'),
-            'excerpt'=>request('excerpt'),
-            'body'=>request('body')
-        ]);
+        // Article::create([
+        //     'title'=>request('title'),
+        //     'excerpt'=>request('excerpt'),
+        //     'body'=>request('body')
+        // ]);
+
+        // Article::create(request()->validate([
+        //     'title' => 'required',
+        //     'excerpt' => 'required',
+        //     'body' =>'required'
+        // ]));
+        Article::create($this->validateArticle());
+
 
         return redirect('/articles');
 
@@ -71,23 +80,33 @@ class ArticlesController extends Controller
 
     public function update(Article $article)
     {
+        // method 1
         //persist the edited resource
-        request()->validate([
+        // request()->validate([
 
-            'title'=>'required',
-            'excerpt'=>'required',
-            'body' => 'required'
-        ]);
+        //     'title'=>'required',
+        //     'excerpt'=>'required',
+        //     'body' => 'required'
+        // ]);
+        // method 2
+        // $article = Article::find($article);
+        // $article->title= request('title');
+        // $article->excerpt= request('excerpt');
+        // $article->body= request('body');
+        // $article->save();
 
-        $article = Article::find($id);
-        $article->title= request('title');
-        $article->excerpt= request('excerpt');
-        $article->body= request('body');
-        $article->save();
+        // $article->update(request()->validate([
+        //     'title' => 'required',
+        //     'excerpt' => 'required',
+        //     'body' =>'required'
+        // ]));
+        // method 3
+        $article->update($this->validateArticle());
 
+        // return redirect('/articles/'. $article->id);
+        // return redirect(route('articles.show',$articles));
+           return redirect($article->path());
 
-
-        return redirect('/articles/'. $article->id);
 
     }
 
@@ -95,4 +114,14 @@ class ArticlesController extends Controller
     {
         //delete the resource
     }
+
+    public function validateArticle()
+    {
+        return request()->validate([
+            'title' => 'required',
+            'excerpt' =>'required',
+            'body' => 'required'
+        ]);
+    }
+
 }
